@@ -56,77 +56,79 @@ public class DBApp {
 		// tupels
 		// Init loop :)
 		// for(int i=0;i<30;i++){
-		//0Hashtable htblColNameValue = new Hashtable();
+		// 0Hashtable htblColNameValue = new Hashtable();
 		// change the number here with i and don't forget to remove all of the
 		// pages except the first.
 		// Also dont forget to delete the content of the first page. HAVE FUN =D
-		//0htblColNameValue.put("id", new Integer(12));
-		//0htblColNameValue.put("name", new String("Ahmed Nkoor"));
-		//0htblColNameValue.put("gpa", new Double(0.95));
+		// 0htblColNameValue.put("id", new Integer(12));
+		// 0htblColNameValue.put("name", new String("Ahmed Nkoor"));
+		// 0htblColNameValue.put("gpa", new Double(0.95));
 		// htblColNameValue.put("lol", new String("lol"));
 		// insertIntoTable("Student", htblColNameValue);
 		// deleteFromTable("Student", htblColNameValue);
-		//0updateTable("Student", "name", htblColNameValue);
-		//------------------------------
-		//test v0.02
-		//ignoring trivial test cases (tested before)
-		//~
-		//bugs so far:
-		//handling empty tables
-		//handling creating a table with an invalid clmn(*)
-		//~
-		//working:
-		//creating a table 
-		//handling invalid types (*)
-		//insertion
-		//handling invalid name , type
-		//t2 updating 
-		//t4 invalid name
-		//t5 update primary key
-		//t3 wrong primary
-		//deleting by primary key
-		//test cases:
-		//t1 creating using a diffrent hash table
-		//String strTableName = "Student";
-		//t1 Hashtable htblColNameType = new Hashtable( );
-		//t1 htblColNameType.put("id", "java.lang.Integer");
-		//t1 htblColNameType.put("name", "java.lang.String");
-		//t1 htblColNameType.put("gpa", "java.lang.double");
-		//t1 createTable( "Table1", "id", htblColNameType );
-	     //t1 Hashtable htblColNameValue = new Hashtable( );
-		//t1 htblColNameValue.put("id", new Integer( 2343433 ));
-		//t1 htblColNameValue.put("name",new String("Ahmed Noor"));
-		//t1 htblColNameValue.put("gpa",new Double(0.95));
-		//t1 insertIntoTable("Table1",htblColNameValue);
-		//t2 updating 
-		//t2 Hashtable x = new Hashtable( );
-		//t2 x.put("id", new Integer( 2343432 ));
-		//t2 x.put("name",new String("Ahmed Noor"));
-		//t2 x.put("gpa",new Double(0.97));
-		//t2 updateTable("Table1","id",x);
-		//t3 wrong primary
-		//t3 x.put("id", new Integer( 2343432 ));
-		//t3 x.put("name",new String("Ahmed Noor"));
-		//t3 x.put("gpa",new Double(0.97));
-		//t3 updateTable("Table1","name",x);
-		//t4 invalid name
-		//t4 Hashtable x = new Hashtable( );
-		//t4 x.put("id", new Integer( 2343432 ));
-		//t4 x.put("name",new String("Ahmed Noor"));
-		//t4 x.put("xd",new Double(0.97));
-		//t4 updateTable("Table1","id",x);
-		//t5 update primary key
-		//t6 x.put("id", new Integer( 2343436 ));
-		//t6 x.put("name",new String("Ahmed Noor"));
-		//t6 x.put("gpa",new Double(0.97));
-		//t6 updateTable("Table1","id",x);
-		//t7 deleting
-		//t7Hashtable d = new Hashtable( );
-		//t7d.put("id", new Integer(2343432));
-		//t7d.put("name",new String("Ahmed Noor"));
-		//t7d.put("gpa",new Double(0.97));
-		//t7deleteFromTable("Table1",d);
-		//=====================================================================================
+		// 0updateTable("Student", "name", htblColNameValue);
+		// ------------------------------
+		// test v0.02
+		// ignoring trivial test cases (tested before)
+		// ~
+		// bugs so far:
+		// handling empty tables
+		// handling creating a table with an invalid clmn(*)
+		// ~
+		// working:
+		// creating a table
+		// handling invalid types (*)
+		// insertion
+		// handling invalid name , type
+		// t2 updating
+		// t4 invalid name
+		// t5 update primary key
+		// t3 wrong primary
+		// deleting by primary key
+		// test cases:
+		// t1 creating using a diffrent hash table
+		// String strTableName = "Student";
+		// t0 Hashtable htblColNameType = new Hashtable( );
+		// t0 createTable( "Table2", "id", htblColNameType );
+		// t1 Hashtable htblColNameType = new Hashtable( );
+		// t1 htblColNameType.put("id", "java.lang.Integer");
+		// t1 htblColNameType.put("name", "java.lang.String");
+		// t1 htblColNameType.put("gpa", "java.lang.double");
+		// t1 createTable( "Table1", "id", htblColNameType );
+		// t1 Hashtable htblColNameValue = new Hashtable( );
+		// t1 htblColNameValue.put("id", new Integer( 2343433 ));
+		// t1 htblColNameValue.put("name",new String("Ahmed Noor"));
+		// t1 htblColNameValue.put("gpa",new Double(0.95));
+		// t1 insertIntoTable("Table1",htblColNameValue);
+		// t2 updating
+		// t2 Hashtable x = new Hashtable( );
+		// t2 x.put("id", new Integer( 2343432 ));
+		// t2 x.put("name",new String("Ahmed Noor"));
+		// t2 x.put("gpa",new Double(0.97));
+		// t2 updateTable("Table1","id",x);
+		// t3 wrong primary
+		// t3 x.put("id", new Integer( 2343432 ));
+		// t3 x.put("name",new String("Ahmed Noor"));
+		// t3 x.put("gpa",new Double(0.97));
+		// t3 updateTable("Table1","name",x);
+		// t4 invalid name
+		// t4 Hashtable x = new Hashtable( );
+		// t4 x.put("id", new Integer( 2343432 ));
+		// t4 x.put("name",new String("Ahmed Noor"));
+		// t4 x.put("xd",new Double(0.97));
+		// t4 updateTable("Table1","id",x);
+		// t5 update primary key
+		// t6 x.put("id", new Integer( 2343436 ));
+		// t6 x.put("name",new String("Ahmed Noor"));
+		// t6 x.put("gpa",new Double(0.97));
+		// t6 updateTable("Table1","id",x);
+		// t7 deleting
+		// t7Hashtable d = new Hashtable( );
+		// t7d.put("id", new Integer(2343432));
+		// t7d.put("name",new String("Ahmed Noor"));
+		// t7d.put("gpa",new Double(0.97));
+		// t7deleteFromTable("Table1",d);
+		// =====================================================================================
 		String strTableName = "Table1";
 		Tuple tuple = new Tuple();
 		PriorityQueue<Tuple> table = new PriorityQueue<Tuple>();
@@ -171,7 +173,7 @@ public class DBApp {
 				}
 
 				// in.close();
-				//printTuples(table);
+				// printTuples(table);
 			}
 		} catch (IOException i) {
 			i.printStackTrace();
@@ -181,13 +183,11 @@ public class DBApp {
 			c.printStackTrace();
 			return;
 		}
-		//=====================================================================================
+		// =====================================================================================
 		printTuples(table);
-		
-		
-		
-		//------------------------------
-		
+
+		// ------------------------------
+
 		// }
 		// end of it
 		//
@@ -217,8 +217,18 @@ public class DBApp {
 
 	}
 
+	public static void emptyHash(Hashtable<String, String> columnsnametype) throws DBAppException {
+		if (columnsnametype.isEmpty())
+			throw new DBAppException("You are trying to use an empty hashtable");
+	}
+	public static void emptyHashObject(Hashtable<String, Object> columnsnametype) throws DBAppException {
+		if (columnsnametype.isEmpty())
+			throw new DBAppException("You are trying to use an empty hashtable");
+	}
+
 	public static void createTable(String tablename, String key, Hashtable<String, String> columnsnametype)
 			throws DBAppException, IOException {
+		emptyHash(columnsnametype);
 		if (!columnsnametype.containsKey(key))
 			throw new DBAppException("The key has to be part of the table");
 		ArrayList<String> a = new ArrayList<String>(columnsnametype.values());
@@ -270,6 +280,7 @@ public class DBApp {
 
 	public static void insertIntoTable(String strTableName, Hashtable<String, Object> htblColNameValue)
 			throws DBAppException, IOException {
+		emptyHashObject(htblColNameValue);
 		Tuple tuple = new Tuple();
 		PriorityQueue<Tuple> table = new PriorityQueue<Tuple>();
 		ArrayList<PriorityQueue<Tuple>> tableOfTables = new ArrayList<PriorityQueue<Tuple>>();
@@ -401,6 +412,7 @@ public class DBApp {
 
 	public static void deleteFromTable(String strTableName, Hashtable<String, Object> htblColNameValue)
 			throws DBAppException, IOException {
+		emptyHashObject(htblColNameValue);
 		Tuple tuple = new Tuple();
 		PriorityQueue<Tuple> table = new PriorityQueue<Tuple>();
 		ArrayList<PriorityQueue<Tuple>> tableOfTables = new ArrayList<PriorityQueue<Tuple>>();
@@ -531,6 +543,7 @@ public class DBApp {
 	// ============================================================================
 	public static void updateTable(String strTableName, String strKey, Hashtable<String, Object> htblColNameValue)
 			throws DBAppException, IOException {
+		emptyHashObject(htblColNameValue);
 		Tuple tuple = new Tuple();
 		PriorityQueue<Tuple> table = new PriorityQueue<Tuple>();
 		ArrayList<PriorityQueue<Tuple>> tableOfTables = new ArrayList<PriorityQueue<Tuple>>();
@@ -566,7 +579,7 @@ public class DBApp {
 
 					}
 				}
-				//printTuples(table);
+				// printTuples(table);
 			}
 		} catch (IOException i) {
 			i.printStackTrace();
@@ -595,8 +608,8 @@ public class DBApp {
 						if (metaArray[3].equalsIgnoreCase("true")) {
 							tmpInteger = i;
 							value = val;
-							if(!metaArray[1].equals(strKey)){
-							throw new DBAppException("The primary entered doesn't match");
+							if (!metaArray[1].equals(strKey)) {
+								throw new DBAppException("The primary entered doesn't match");
 							}
 						}
 						break;
