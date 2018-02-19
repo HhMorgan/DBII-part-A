@@ -55,18 +55,18 @@ public class DBApp {
 		 */
 		// tupels
 		// Init loop :)
-		//for(int i=0;i<30;i++){
+		// for(int i=0;i<30;i++){
 		Hashtable htblColNameValue = new Hashtable();
 		// change the number here with i and don't forget to remove all of the
 		// pages except the first.
 		// Also dont forget to delete the content of the first page. HAVE FUN =D
 		htblColNameValue.put("id", new Integer(12));
-		htblColNameValue.put("name", new String("Ahmed Noor"));
+		htblColNameValue.put("name", new String("Ahmed Nkoor"));
 		htblColNameValue.put("gpa", new Double(0.95));
 		// htblColNameValue.put("lol", new String("lol"));
-		//insertIntoTable("Student", htblColNameValue);
-		//deleteFromTable("Student", htblColNameValue);
-		updateTable("Student", "id", htblColNameValue);
+		// insertIntoTable("Student", htblColNameValue);
+		// deleteFromTable("Student", htblColNameValue);
+		updateTable("Student", "name", htblColNameValue);
 		// }
 		// end of it
 		//
@@ -359,27 +359,26 @@ public class DBApp {
 		}
 		// ------------------------------------------------------------------------
 		PriorityQueue<Tuple> tableLoopTmpWhyNot = new PriorityQueue<Tuple>();
-		boolean flag=false;
+		boolean flag = false;
 		while (!table.isEmpty()) {
 			Tuple tmpTuple = table.poll();
-			Object pKey=tmpTuple.key;
-			Object pkeyTmpTuple=tuple.tupleData.get(tmpInteger);
+			Object pKey = tmpTuple.key;
+			Object pkeyTmpTuple = tuple.tupleData.get(tmpInteger);
 			if (pKey.equals(pkeyTmpTuple)) {
-				flag=true;
-				//table.remove(tuple);
+				flag = true;
+				// table.remove(tuple);
 				break;
 			} else {
 				tableLoopTmpWhyNot.add(tmpTuple);
-				//throw new DBAppException("The row doesn't exist");
+				// throw new DBAppException("The row doesn't exist");
 			}
-			//tuple.remove(((Tuple) tmpTuple).tupleData.size() - 1);
-			
+			// tuple.remove(((Tuple) tmpTuple).tupleData.size() - 1);
+
 		}
-		//TODO raise Exception if the entry doesn't exist
-		if(!flag){
+		if (!flag) {
 			throw new DBAppException("The row doesn't exist");
 		}
-		while (!tableLoopTmpWhyNot.isEmpty()){
+		while (!tableLoopTmpWhyNot.isEmpty()) {
 			table.add(tableLoopTmpWhyNot.poll());
 		}
 		// =========================================================================
@@ -407,8 +406,9 @@ public class DBApp {
 		}
 
 	}
-//============================================================================
-	public static void updateTable(String strTableName, String strKey,Hashtable<String, Object> htblColNameValue)
+
+	// ============================================================================
+	public static void updateTable(String strTableName, String strKey, Hashtable<String, Object> htblColNameValue)
 			throws DBAppException, IOException {
 		Tuple tuple = new Tuple();
 		PriorityQueue<Tuple> table = new PriorityQueue<Tuple>();
@@ -474,6 +474,9 @@ public class DBApp {
 						if (metaArray[3].equalsIgnoreCase("true")) {
 							tmpInteger = i;
 							value = val;
+							if(!metaArray[1].equals(strKey)){
+							throw new DBAppException("The primary entered doesn't match");
+							}
 						}
 						break;
 					} else {
@@ -489,29 +492,29 @@ public class DBApp {
 		}
 		// ------------------------------------------------------------------------
 		PriorityQueue<Tuple> tableLoopTmpWhyNot = new PriorityQueue<Tuple>();
-		boolean flag=false;
+		boolean flag = false;
 		while (!table.isEmpty()) {
 			Tuple tmpTuple = table.poll();
-			Object pKey=tmpTuple.key;
-			Object pkeyTmpTuple=tuple.tupleData.get(tmpInteger);
-			//System.out.println(pkeyTmpTuple);
+			Object pKey = tmpTuple.key;
+			Object pkeyTmpTuple = tuple.tupleData.get(tmpInteger);
+			// System.out.println(pkeyTmpTuple);
 			if (pKey.equals(pkeyTmpTuple)) {
-				flag=true;
+				flag = true;
 				tuple.add(new Date());
 				tuple.setKey(tuple.tupleData.get(tmpInteger));
 				tableLoopTmpWhyNot.add(tuple);
 				break;
 			} else {
 				tableLoopTmpWhyNot.add(tmpTuple);
-				//throw new DBAppException("The row doesn't exist");
+				// throw new DBAppException("The row doesn't exist");
 			}
-			//tuple.remove(((Tuple) tmpTuple).tupleData.size() - 1);
-			
+			// tuple.remove(((Tuple) tmpTuple).tupleData.size() - 1);
+
 		}
-		if(!flag){
+		if (!flag) {
 			throw new DBAppException("The row doesn't exist");
 		}
-		while (!tableLoopTmpWhyNot.isEmpty()){
+		while (!tableLoopTmpWhyNot.isEmpty()) {
 			table.add(tableLoopTmpWhyNot.poll());
 		}
 		// =========================================================================
@@ -540,7 +543,7 @@ public class DBApp {
 
 	}
 
-//============================================================================
+	// ============================================================================
 	public static void printTuples(PriorityQueue<Tuple> tupleData) {
 
 		Iterator it = tupleData.iterator();
