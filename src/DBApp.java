@@ -56,17 +56,138 @@ public class DBApp {
 		// tupels
 		// Init loop :)
 		// for(int i=0;i<30;i++){
-		Hashtable htblColNameValue = new Hashtable();
+		//0Hashtable htblColNameValue = new Hashtable();
 		// change the number here with i and don't forget to remove all of the
 		// pages except the first.
 		// Also dont forget to delete the content of the first page. HAVE FUN =D
-		htblColNameValue.put("id", new Integer(12));
-		htblColNameValue.put("name", new String("Ahmed Nkoor"));
-		htblColNameValue.put("gpa", new Double(0.95));
+		//0htblColNameValue.put("id", new Integer(12));
+		//0htblColNameValue.put("name", new String("Ahmed Nkoor"));
+		//0htblColNameValue.put("gpa", new Double(0.95));
 		// htblColNameValue.put("lol", new String("lol"));
 		// insertIntoTable("Student", htblColNameValue);
 		// deleteFromTable("Student", htblColNameValue);
-		updateTable("Student", "name", htblColNameValue);
+		//0updateTable("Student", "name", htblColNameValue);
+		//------------------------------
+		//test v0.02
+		//ignoring trivial test cases (tested before)
+		//~
+		//bugs so far:
+		//handling empty tables
+		//handling creating a table with an invalid clmn(*)
+		//~
+		//working:
+		//creating a table 
+		//handling invalid types (*)
+		//insertion
+		//handling invalid name , type
+		//t2 updating 
+		//t4 invalid name
+		//t5 update primary key
+		//t3 wrong primary
+		//deleting by primary key
+		//test cases:
+		//t1 creating using a diffrent hash table
+		//String strTableName = "Student";
+		//t1 Hashtable htblColNameType = new Hashtable( );
+		//t1 htblColNameType.put("id", "java.lang.Integer");
+		//t1 htblColNameType.put("name", "java.lang.String");
+		//t1 htblColNameType.put("gpa", "java.lang.double");
+		//t1 createTable( "Table1", "id", htblColNameType );
+	     //t1 Hashtable htblColNameValue = new Hashtable( );
+		//t1 htblColNameValue.put("id", new Integer( 2343433 ));
+		//t1 htblColNameValue.put("name",new String("Ahmed Noor"));
+		//t1 htblColNameValue.put("gpa",new Double(0.95));
+		//t1 insertIntoTable("Table1",htblColNameValue);
+		//t2 updating 
+		//t2 Hashtable x = new Hashtable( );
+		//t2 x.put("id", new Integer( 2343432 ));
+		//t2 x.put("name",new String("Ahmed Noor"));
+		//t2 x.put("gpa",new Double(0.97));
+		//t2 updateTable("Table1","id",x);
+		//t3 wrong primary
+		//t3 x.put("id", new Integer( 2343432 ));
+		//t3 x.put("name",new String("Ahmed Noor"));
+		//t3 x.put("gpa",new Double(0.97));
+		//t3 updateTable("Table1","name",x);
+		//t4 invalid name
+		//t4 Hashtable x = new Hashtable( );
+		//t4 x.put("id", new Integer( 2343432 ));
+		//t4 x.put("name",new String("Ahmed Noor"));
+		//t4 x.put("xd",new Double(0.97));
+		//t4 updateTable("Table1","id",x);
+		//t5 update primary key
+		//t6 x.put("id", new Integer( 2343436 ));
+		//t6 x.put("name",new String("Ahmed Noor"));
+		//t6 x.put("gpa",new Double(0.97));
+		//t6 updateTable("Table1","id",x);
+		//t7 deleting
+		//t7Hashtable d = new Hashtable( );
+		//t7d.put("id", new Integer(2343432));
+		//t7d.put("name",new String("Ahmed Noor"));
+		//t7d.put("gpa",new Double(0.97));
+		//t7deleteFromTable("Table1",d);
+		//=====================================================================================
+		String strTableName = "Table1";
+		Tuple tuple = new Tuple();
+		PriorityQueue<Tuple> table = new PriorityQueue<Tuple>();
+		ArrayList<PriorityQueue<Tuple>> tableOfTables = new ArrayList<PriorityQueue<Tuple>>();
+		ArrayList<String> metadataArray = readCSV("metadata.csv", strTableName);
+		// The value of N that should be changed based on the config file
+		int n = 200;
+		try {
+			String path = strTableName + File.separator + "Page" + 1 + ".class";
+			FileInputStream fileIn = new FileInputStream(path);
+			ObjectInputStream in = null;
+			if (fileIn.available() != 0) {
+				for (int i = 2;; i++) {
+
+					if (fileIn.available() != 0) {
+						in = new ObjectInputStream(fileIn);
+						PriorityQueue<Tuple> tableTmp = (PriorityQueue<Tuple>) in.readObject();
+						tableOfTables.add(tableTmp);
+
+						// fileIn.close();
+
+					}
+					path = strTableName + File.separator + "Page" + i + ".class";
+					// System.out.println(path);
+					File f = new File(path);
+					if (f.isFile() && f.canRead()) {
+						// System.out.println("hi");
+						fileIn = new FileInputStream(path);
+					} else
+						break;
+					// printTuples(table);
+				}
+				in.close();
+				fileIn.close();
+				System.out.println("tableOfTables size : " + tableOfTables.size());
+				for (int i = 0; i < tableOfTables.size(); i++) {
+					int queueInitialSize = tableOfTables.get(i).size();
+					for (int j = 0; j < queueInitialSize; j++) {
+						table.add(tableOfTables.get(i).remove());
+
+					}
+				}
+
+				// in.close();
+				//printTuples(table);
+			}
+		} catch (IOException i) {
+			i.printStackTrace();
+			return;
+		} catch (ClassNotFoundException c) {
+			System.out.println("Class is non existant");
+			c.printStackTrace();
+			return;
+		}
+		//=====================================================================================
+		printTuples(table);
+		
+		
+		
+		//------------------------------
+		
 		// }
 		// end of it
 		//
@@ -445,7 +566,7 @@ public class DBApp {
 
 					}
 				}
-				printTuples(table);
+				//printTuples(table);
 			}
 		} catch (IOException i) {
 			i.printStackTrace();

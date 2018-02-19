@@ -1,5 +1,6 @@
+
 Table Name,Column Name,Column Type,Key,Indexed
-Student,gpa,java.lang.double,false,false
-Student,name,java.lang.String,false,false
-Student,id,java.lang.Integer,true,false
-Student,TouchDate,java.util.Date,false,false
+Table1,gpa,java.lang.double,false,false
+Table1,name,java.lang.String,false,false
+Table1,id,java.lang.Integer,true,false
+Table1,TouchDate,java.util.Date,false,false
