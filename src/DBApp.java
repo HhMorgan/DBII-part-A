@@ -555,4 +555,50 @@ public class DBApp {
 		br.close();
 		return lines;
 	}
+	
+	public static void createBRINIndex(String strTableName, String strColName) throws DBAppException, IOException {
+		ArrayList<String> metadataArray = readCSV("metadata.csv", strTableName);
+		boolean tableFound = false;
+		boolean colFound = false;
+		ArrayList<ArrayList<Object>> allBrinoftable = new ArrayList<>();
+		for (int i = 0; i < metadataArray.size(); i++) {
+
+			String[] metaArray = metadataArray.get(i).split(",");
+
+			if (metaArray[0].equals(strTableName)) {
+				tableFound = true;
+
+				if (metaArray[1].equals(strColName)) {
+					colFound = true;
+
+					if (metaArray[2].equals("TRUE") && metaArray[3].equals("FALSE")) {
+						// Set Index to True in Metadata
+						ArrayList<PriorityQueue> table = ReadFilesBrin(strTableName);
+						for(int j=0;j<table.size();j++){
+							PriorityQueue<Tuple> q = table.get(i);
+							Object[] qtoArray =	q.toArray();
+							allBrinoftable.get(i).add(q.peek().key); //min
+							allBrinoftable.get(i).add(qtoArray[q.size()-1]);//max
+							allBrinoftable.get(i).add(i);//pointer equivalent to page number
+						}
+
+					}
+
+					else if (metaArray[2].equals("FALSE") && metaArray[3].equals("FALSE")) {
+						// After Midterms.
+					}
+				}
+			}
+
+		}
+
+		if (!tableFound) {
+			throw new DBAppException("Table Not Found.");
+		}
+
+		if (!colFound) {
+			throw new DBAppException("Column Not Found.");
+		}
+
+	}
 }
