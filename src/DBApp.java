@@ -601,4 +601,39 @@ public class DBApp {
 		}
 
 	}
+	
+	public static boolean isIndexed(String strTableName, String strColName) throws IOException, DBAppException{
+		ArrayList<String> metadataArray = readCSV("metadata.csv", strTableName);
+		boolean tableFound = false;
+		boolean colFound = false;
+		for (int i = 0; i < metadataArray.size(); i++) {
+
+			String[] metaArray = metadataArray.get(i).split(",");
+
+			if (metaArray[0].equals(strTableName)) {
+				tableFound = true;
+
+				if (metaArray[1].equals(strColName)) {
+					colFound = true;
+					if(metaArray[3].equals("TRUE")) return true;
+					else return false;
+				}
+				}
+			}
+		if (!tableFound) {
+			throw new DBAppException("Table Not Found.");
+		}
+
+		if (!colFound) {
+			throw new DBAppException("Column Not Found.");
+		}
+		return false;
+	}
+	
+	public static Tuple getTuple(PriorityQueue<Tuple> pq, int index){
+		while(index-- >0){
+			pq.poll();
+		}
+		return pq.peek();
+	}
 }
