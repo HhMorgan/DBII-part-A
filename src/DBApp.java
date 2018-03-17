@@ -636,6 +636,66 @@ public class DBApp {
 		}
 		return pq.peek();
 	}
+	
+		public static ArrayList<PriorityQueue> ReadFilesBrin(String strTableName) throws IOException, DBAppException {
+		ArrayList<PriorityQueue> tableOfTables = new ArrayList<PriorityQueue>();
+		try {
+			// path is the directory of the stored pages, we start with 1 as its
+			// the first entry in our storage system
+			String path = strTableName + File.separator + "Page" + 1 + ".class";
+			// fileIn reads the file from the path
+			FileInputStream fileIn = new FileInputStream(path);
+			ObjectInputStream in = null;
+			// the condition checks if the file exists or is that table non
+			// existent in the first place
+			if (fileIn.available() != 0) {
+				// we start the loop with i=2 because we will fetch the first
+				// file first then we start looping
+				// this point will be explained better inside the loop
+				for (int i = 2;; i++) {
+					// the condition checks if the page exists
+					if (fileIn.available() != 0) {
+						// we load the content of the page
+						in = new ObjectInputStream(fileIn);
+						// we use a tmp 2D array that we will store in
+						// tableOfTables
+						PriorityQueue<ArrayList> tableTmp = (PriorityQueue<ArrayList>) in.readObject();
+						tableOfTables.add(tableTmp);
+					}
+					// we initialize the directory for the next page
+					path = strTableName + File.separator + "Page" + i + ".class";
+					File f = new File(path);
+					// checks if the page exists or not
+					if (f.isFile() && f.canRead()) {
+						// loads the next page
+						fileIn = new FileInputStream(path);
+					} else // the pages have ended, so we break out of the
+						// reading process
+						break;
+					// printTuples(table);
+				}
+				in.close();
+				fileIn.close();
+				// This line is for debugging purposes only
+				System.out.println("tableOfTables size : " + tableOfTables.size());
+				// loads the content of the 3D array (tableOfTables) into the 2D
+				// array (table) to ease the process of handling arrays
+				// as manipulating a 2D array is easier than 3D array and will
+				// also decrease the time & space complexity of the program
+
+				// This line is for debugging purposes only
+				//printTuples(table);
+				// returns the table to be used in the main program
+				return tableOfTables;
+			}
+		} catch (IOException i) {
+			throw new DBAppException("Database is non existant");
+		} catch (ClassNotFoundException c) {
+			throw new DBAppException("Class is non existant");
+		}
+		return tableOfTables;
+	}
+	
 	//this is my attempt at creating the nonclustering key index,not actual method not its right place
 	public static void nonclusteredindex(){
 		ArrayList<PriorityQueue<Tuple>> table = null;//entire table
