@@ -636,4 +636,29 @@ public class DBApp {
 		}
 		return pq.peek();
 	}
+	//this is my attempt at creating the nonclustering key index,not actual method not its right place
+	public static void nonclusteredindex(){
+		ArrayList<PriorityQueue<Tuple>> table = null;//entire table
+		ArrayList<nonClustering> dense = null;
+		int x=5; //this will come from the method that gets the place of the column from heshams method
+		for(int i=0;i<table.size();i++){
+			PriorityQueue<Tuple> pq = table.get(i);
+			int tuplelocation =0;
+			while(!pq.isEmpty()){
+			Tuple t = pq.poll();
+			if(dense.contains(t.tupleData.get(x))){
+				//very stupid not sure it will work
+				dense.get(dense.indexOf(t.tupleData.get(x))).pointers.add(new Pointer(i, tuplelocation));
+			}
+			else {
+				ArrayList<Pointer> pointers = new ArrayList<Pointer>();
+				pointers.add(new Pointer(i,tuplelocation));
+				dense.add(new nonClustering(t.tupleData.get(x), pointers ));
+				}
+			tuplelocation++;	
+		}
+			}
+		
+		
+	}
 }
