@@ -696,4 +696,204 @@ public class DBApp {
 		br.close();
 		return lines;
 	}
+	
+	public PriorityQueue<Tuple> selectFromTable(String strTableName, String strColumnName,Object[] objarrValues,String[] strarrOperators)throws DBAppException, IOException
+	{
+		ArrayList<String> metadataArray = readCSV("metadata.csv", strTableName);
+		PriorityQueue<Tuple>result = new PriorityQueue<Tuple>();
+		PriorityQueue<Tuple> table =Readfiles(strTableName);
+		ArrayList posarray=GetColumnPosition(strColumnName,metadataArray);
+		String type=(String) posarray.get(0);
+		int position=(int) posarray.get(1);
+			for(int s=0;s<objarrValues.length;s++)
+			{			
+			
+			
+			Object value=objarrValues[s];
+			Object operator=strarrOperators[s];
+			
+			
+			while(!(table.isEmpty()))
+			{
+				Tuple t =table.remove();				
+				Object tocheck=t.tupleData.get(position);
+				if(operator.equals("=="))
+				{
+					if(type.equals("java.lang.String"))
+					{
+					if(tocheck.equals(value))
+					{
+						result.add(t);
+					}
+					}
+					
+					if(type.equals("java.lang.Date"))
+					{
+					int compr=((Date)(tocheck)).compareTo((Date)value);
+					if(compr==0)
+					{
+						result.add(t);
+					}
+					}
+					/*
+						if(tocheck==value)
+							result.add(value);*/
+					if(type.equals("java.lang.Integer"))
+					{
+						if((int)tocheck==(int)value)
+							result.add(t);
+					}
+					
+					if(type.equals("java.lang.Double"))
+					{
+						if((Double)tocheck==(Double)value)
+							result.add(t);
+					}
+					
+				}
+				if(operator.equals("<="))
+				{
+					if(type.equals("java.lang.String"))
+					{
+						int compr=((String)(tocheck)).compareTo((String)value);
+					if(compr==0||compr==-1)
+					{
+						result.add(t);
+					}
+					}
+					
+					if(type.equals("java.lang.Date"))
+					{
+					int compr=((Date)(tocheck)).compareTo((Date)value);
+					if(compr==0||compr==-1)
+					{
+						result.add(t);
+					}
+					}
+					
+					if(type.equals("java.lang.Integer"))
+					{
+						if(((int)tocheck<(int)value)||((int)tocheck==(int)value))
+							result.add(t);
+					}
+					if(type.equals("java.lang.Double"))
+					{
+						if(((Double)tocheck<(Double)value)||((Double)tocheck==(Double)value))
+							result.add(t);
+					}
+				}
+				if(operator.equals(">="))
+				{
+					if(type.equals("java.lang.String"))
+					{
+						int compr=((String)(tocheck)).compareTo((String)value);
+					if(compr==0||compr==1)
+					{
+						result.add(t);
+					}
+					}
+					if(type.equals("java.lang.Date"))
+					{
+					int compr=((Date)(tocheck)).compareTo((Date)value);
+					if(compr==0||compr==1)
+					{
+						result.add(t);
+					}
+					}
+					if(type.equals("java.lang.Integer"))
+					{
+						if(((int)tocheck>(int)value)||((int)tocheck==(int)value))
+							result.add(t);
+					}
+					if(type.equals("java.lang.Double"))
+					{
+						if(((Double)tocheck>(Double)value)||((Double)tocheck==(Double)value))
+							result.add(t);
+					}
+				}
+				/*if(operator.equals("!="))
+				{
+					
+					if(type.equals("java.lang.Integer"))
+					{
+						if(((int)tocheck!=(int)value))
+							result.add(t);
+					}
+					if(type.equals("java.lang.Double"))
+					{
+						if(((Double)tocheck!=(Double)value))
+							result.add(t);
+					}
+				}
+*/				if(operator.equals("<"))
+				{
+	            if(type.equals("java.lang.String"))
+	            {
+	        	int compr=((String)(tocheck)).compareTo((String)value);
+	        	if(compr==-1)
+	        	{
+	        		result.add(t);
+	        	}
+	            }
+	            
+	            if(type.equals("java.lang.Date"))
+				{
+				int compr=((Date)(tocheck)).compareTo((Date)value);
+				if(compr==-1)
+				{
+					result.add(t);
+				}
+				}
+	
+					if(type.equals("java.lang.Integer"))
+					{
+						if(((int)tocheck<(int)value))
+							result.add(t);
+					}
+					if(type.equals("java.lang.Double"))
+					{
+						if(((Double)tocheck<(Double)value))
+							result.add(t);
+					}
+				}
+				if(operator.equals(">"))
+				{
+					if(type.equals("java.lang.String"))
+					{
+						int compr=((String)(tocheck)).compareTo((String)value);
+					if(compr==1)
+					{
+						result.add(t);
+					}
+					}
+					if(type.equals("java.lang.Date"))
+					{
+					int compr=((Date)(tocheck)).compareTo((Date)value);
+					if(compr==1)
+					{
+						result.add(t);
+					}
+					}
+					if(type.equals("java.lang.Integer"))
+					{
+						if(((int)tocheck>(int)value))
+							result.add(t);
+					}
+					if(type.equals("java.lang.Double"))
+					{
+						if(((Double)tocheck>(Double)value))
+							result.add(t);
+					}
+				}
+				
+				
+				
+				
+			}
+			table= new PriorityQueue<Tuple>(result);
+		}
+			return table;
+		}
+	
+	
 }
