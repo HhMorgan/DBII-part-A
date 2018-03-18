@@ -1,5 +1,6 @@
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 
@@ -30,7 +31,9 @@ public class nonClustering implements Serializable, Comparable<nonClustering>{
 
 
 
-
+	public String toString(){
+		return "value : "+value.toString()+", pointers : "+Arrays.toString(pointers.toArray());
+	}
 	public ArrayList<Pointer> getPointers() {
 		return pointers;
 	}

@@ -1,5 +1,6 @@
+import java.io.Serializable;
 
-public class Pointer {
+public class Pointer implements Serializable {
 	
 	int page;
 	int index;
@@ -9,5 +10,7 @@ public class Pointer {
 		this.page = page;
 		this.index = index;
 	}
-	
+	public String toString(){
+		return "page : "+page+", index : "+ index;
+	}
 }
