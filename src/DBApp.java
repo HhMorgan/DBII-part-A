@@ -45,28 +45,28 @@ public class DBApp {
 		 */
 
 		// test cases
-		
-//		  String strTableName = "Student"; 
-//		 Hashtable htblColNameType = new Hashtable( );
-//		  htblColNameType.put("id", "java.lang.Integer");
-//		  htblColNameType.put("name", "java.lang.String");
-//		  htblColNameType.put("gpa", "java.lang.double"); 
-//		  createTable( strTableName, "id", htblColNameType );
-		  //createBRINIndex(strTableName, "gpa" );
-		 
+
+		//		  String strTableName = "Student"; 
+		//		 Hashtable htblColNameType = new Hashtable( );
+		//		  htblColNameType.put("id", "java.lang.Integer");
+		//		  htblColNameType.put("name", "java.lang.String");
+		//		  htblColNameType.put("gpa", "java.lang.double"); 
+		//		  createTable( strTableName, "id", htblColNameType );
+		//createBRINIndex(strTableName, "gpa" );
+
 		// tupels
 		// Init loop :)
-//		for(int i=0;i<201;i++){
-//		Hashtable htblColNameValue = new Hashtable();
-//		// change the number here with i and don't forget to remove all of the
-//		// pages except the first.
-//		// Also dont forget to delete the content of the first page. HAVE FUN =D
-//		htblColNameValue.put("id", new Integer(i));
-//		htblColNameValue.put("name", new String("Ahmed Nkoor"));
-//		htblColNameValue.put("gpa", new Double(0.95));
-//		// htblColNameValue.put("lol", new String("lol"));
-//		 insertIntoTable("Student", htblColNameValue);
-//		 }
+		//		for(int i=0;i<201;i++){
+		//		Hashtable htblColNameValue = new Hashtable();
+		//		// change the number here with i and don't forget to remove all of the
+		//		// pages except the first.
+		//		// Also dont forget to delete the content of the first page. HAVE FUN =D
+		//		htblColNameValue.put("id", new Integer(i));
+		//		htblColNameValue.put("name", new String("Ahmed Nkoor"));
+		//		htblColNameValue.put("gpa", new Double(0.95));
+		//		// htblColNameValue.put("lol", new String("lol"));
+		//		 insertIntoTable("Student", htblColNameValue);
+		//		 }
 		// deleteFromTable("Student", htblColNameValue);
 		// 0updateTable("Student", "name", htblColNameValue);
 		// ------------------------------
@@ -89,7 +89,7 @@ public class DBApp {
 		// deleting by primary key
 		// test cases:
 		// t1 creating using a diffrent hash table
-		 String strTableName = "Table1";
+		String strTableName = "Table1";
 		// t0 Hashtable htblColNameType = new Hashtable( );
 		// t0 createTable( "Table2", "id", htblColNameType );
 		// t1 Hashtable htblColNameType = new Hashtable( );
@@ -457,8 +457,39 @@ public class DBApp {
 		WriteFile(strTableName,table,200);
 	}
 
+	public static boolean isBetween(Object val,Object min,Object max) {
+		String type = val.getClass().toString();
+		type =type.substring(6, type.length());
+		if(type.equals("java.lang.Double")){
+			//return ((Double)(val)).compareTo((Double)(val2));
+			if(((Double)(val)) >= (Double)min && ((Double)(val)) <= (Double)max){
+				return true;
+			}
+
+		}
+		else if(type.equals("java.lang.Integer")){
+			if(((Integer)(val)) >= (Integer)min && ((Integer)(val)) <= (Integer)max){
+				return true;
+			}
+		}
+		else if(type.toString().equals("java.util.Date")){
+			if(((Date)(val)).after(((Date)(min))) && ((Date)(val)).before(((Date)(max)))){
+				return true;
+			}
+		}
+		else if(type.toString().equals("java.lang.String"))
+		{
+			if(((String)val).compareTo((String)min) >= 0 && ((String)val).compareTo((String)max) <= 0){
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public static void deleteFromTable(String strTableName, Hashtable<String, Object> htblColNameValue)
 			throws DBAppException, IOException {
+
 		emptyHashObject(htblColNameValue);
 		PriorityQueue<Tuple> table= Readfiles(strTableName);
 		ArrayList<String> metadataArray = readCSV("metadata.csv", strTableName);
@@ -467,30 +498,95 @@ public class DBApp {
 		int tmpInteger = (int)trioTuple.get(1);
 		Object value = (Object)trioTuple.get(2);
 		// ------------------------------------------------------------------------
-		PriorityQueue<Tuple> tableLoopTmpWhyNot = new PriorityQueue<Tuple>();
-		boolean flag = false;
-		while (!table.isEmpty()) {
-			Tuple tmpTuple = table.poll();
-			Object pKey = tmpTuple.key;
-			Object pkeyTmpTuple = tuple.tupleData.get(tmpInteger);
-			if (pKey.equals(pkeyTmpTuple)) {
-				flag = true;
-				// table.remove(tuple);
+		boolean isIndexed = false;
+		boolean isClustered = false;
+		String indexedCol="";
+		Object indexedVal = null;
+		for(int i=0;i<htblColNameValue.size();i++){
+			isIndexed =	isIndexed(strTableName,(String) htblColNameValue.get(i));
+			isClustered =isClustered(strTableName,(String) htblColNameValue.get(i));
+			if(isIndexed){
+				indexedCol=(String) htblColNameValue.get(i);
+				indexedVal=htblColNameValue.get(htblColNameValue.get(i));
 				break;
-			} else {
-				tableLoopTmpWhyNot.add(tmpTuple);
-				// throw new DBAppException("The row doesn't exist");
 			}
-			// tuple.remove(((Tuple) tmpTuple).tupleData.size() - 1);
+		}
+		PriorityQueue<Tuple> tableLoopTmpWhyNot = new PriorityQueue<Tuple>();
+		PriorityQueue<Tuple> tableLoopTmpWhyNotindex = new PriorityQueue<Tuple>();
+		boolean flag = false;
+		if(isIndexed && isClustered){
+			//indexedCol="hya de";
+			ArrayList<ArrayList<ArrayList<Object>>> brintable=new ArrayList<ArrayList<ArrayList<Object>>>();
+			//brintable=loadbrin(strTableName);
+			for(int i=0;i<brintable.size();i++){
+				for(int j=0;j<brintable.get(i).size();j++){
+					Object min=((brintable.get(i)).get(j)).get(0);
+					Object max=((brintable.get(i)).get(j)).get(1);
+					int page=(int)(((brintable.get(i)).get(j)).get(2));
+					if(isBetween(indexedVal,min,max)){
+						PriorityQueue<Tuple> pageData= new PriorityQueue<Tuple>();
+						//load elpage lol
+						while (!pageData.isEmpty()) {
+							Tuple tmpTuple = pageData.poll();
+							Object pKey = tmpTuple.key;
+							Object pkeyTmpTuple = tuple.tupleData.get(tmpInteger);
+							if (pKey.equals(pkeyTmpTuple)) {
+								flag = true;
+								// table.remove(tup
+								////////////////////////////////////
+								//////
+								///
+								////////////////////////////
+								///
+								
+								/////le);
+								break;
+							} else {
+								tableLoopTmpWhyNotindex.add(tmpTuple);
+								// throw new DBAppException("The row doesn't exist");
+							}
+							// tuple.remove(((Tuple) tmpTuple).tupleData.size() - 1);
+
+						}
+						if (!flag) {
+							throw new DBAppException("The row doesn't exist");
+						}
+						while (!tableLoopTmpWhyNot.isEmpty()) {
+							pageData.add(tableLoopTmpWhyNot.poll());
+						}
+
+
+
+					}
+				}
+			}
 
 		}
-		if (!flag) {
-			throw new DBAppException("The row doesn't exist");
+		else{
+			while (!table.isEmpty()) {
+				Tuple tmpTuple = table.poll();
+				Object pKey = tmpTuple.key;
+				Object pkeyTmpTuple = tuple.tupleData.get(tmpInteger);
+				if (pKey.equals(pkeyTmpTuple)) {
+					flag = true;
+					// table.remove(tuple);
+					break;
+				} else {
+					tableLoopTmpWhyNot.add(tmpTuple);
+					// throw new DBAppException("The row doesn't exist");
+				}
+				// tuple.remove(((Tuple) tmpTuple).tupleData.size() - 1);
+
+			}
+			if (!flag) {
+				throw new DBAppException("The row doesn't exist");
+			}
+			while (!tableLoopTmpWhyNot.isEmpty()) {
+				table.add(tableLoopTmpWhyNot.poll());
+			}
+			// =========================================================================
+
 		}
-		while (!tableLoopTmpWhyNot.isEmpty()) {
-			table.add(tableLoopTmpWhyNot.poll());
-		}
-		// =========================================================================
 		WriteFile(strTableName,table,200);
 
 	}
@@ -555,7 +651,7 @@ public class DBApp {
 		br.close();
 		return lines;
 	}
-	
+
 	public static void createBRINIndex(String strTableName, String strColName) throws DBAppException, IOException {
 		ArrayList<String> metadataArray = readCSV("metadata.csv", strTableName);
 		boolean tableFound = false;
@@ -601,8 +697,35 @@ public class DBApp {
 		}
 
 	}
-	
+
 	public static boolean isIndexed(String strTableName, String strColName) throws IOException, DBAppException{
+		ArrayList<String> metadataArray = readCSV("metadata.csv", strTableName);
+		boolean tableFound = false;
+		boolean colFound = false;
+		for (int i = 0; i < metadataArray.size(); i++) {
+
+			String[] metaArray = metadataArray.get(i).split(",");
+
+			if (metaArray[0].equals(strTableName)) {
+				tableFound = true;
+
+				if (metaArray[1].equals(strColName)) {
+					colFound = true;
+					if(metaArray[4].equals("TRUE")) return true;
+					else return false;
+				}
+			}
+		}
+		if (!tableFound) {
+			throw new DBAppException("Table Not Found.");
+		}
+
+		if (!colFound) {
+			throw new DBAppException("Column Not Found.");
+		}
+		return false;
+	}
+	public static boolean isClustered(String strTableName, String strColName) throws IOException, DBAppException{
 		ArrayList<String> metadataArray = readCSV("metadata.csv", strTableName);
 		boolean tableFound = false;
 		boolean colFound = false;
@@ -618,8 +741,8 @@ public class DBApp {
 					if(metaArray[3].equals("TRUE")) return true;
 					else return false;
 				}
-				}
 			}
+		}
 		if (!tableFound) {
 			throw new DBAppException("Table Not Found.");
 		}
@@ -629,7 +752,8 @@ public class DBApp {
 		}
 		return false;
 	}
-	
+
+
 	public static Tuple getTuple(PriorityQueue<Tuple> pq, int index){
 		while(index-- >0){
 			pq.poll();
@@ -645,20 +769,21 @@ public class DBApp {
 			PriorityQueue<Tuple> pq = table.get(i);
 			int tuplelocation =0;
 			while(!pq.isEmpty()){
-			Tuple t = pq.poll();
-			if(dense.contains(t.tupleData.get(x))){
-				//very stupid not sure it will work
-				dense.get(dense.indexOf(t.tupleData.get(x))).pointers.add(new Pointer(i, tuplelocation));
-			}
-			else {
-				ArrayList<Pointer> pointers = new ArrayList<Pointer>();
-				pointers.add(new Pointer(i,tuplelocation));
-				dense.add(new nonClustering(t.tupleData.get(x), pointers ));
+				Tuple t = pq.poll();
+
+				if(dense.contains(t.tupleData.get(x))){
+					//very stupid not sure it will work
+					dense.get(dense.indexOf(t.tupleData.get(x))).pointers.add(new Pointer(i, tuplelocation));
 				}
-			tuplelocation++;	
-		}
+				else {
+					ArrayList<Pointer> pointers = new ArrayList<Pointer>();
+					pointers.add(new Pointer(i,tuplelocation));
+					dense.add(new nonClustering(t.tupleData.get(x), pointers ));
+				}
+				tuplelocation++;	
 			}
-		
-		
+		}
+
+
 	}
 }
