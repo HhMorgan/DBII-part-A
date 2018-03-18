@@ -270,10 +270,13 @@ public class DBApp {
 		// new table
 		File dir = new File(tablename);
 		dir.mkdir();
+		dir = new File(tablename+File.separator+"Index");
+		dir.mkdir();
 		String firstPagedir = tablename + File.separator + "Page1.class";
 		File f = new File(firstPagedir);
 		f.getParentFile().mkdirs();
 		f.createNewFile();
+		
 	}
 
 	public static void loadCSV(Hashtable<String, String> columnsnametype, String tablename, String pk)
@@ -510,71 +513,7 @@ public class DBApp {
 	
 	//===============================================================================
 	
-	public static PriorityQueue<Tuple> ReadBrinfiles(String strTableName) throws IOException, DBAppException {
-		PriorityQueue<Tuple> table = new PriorityQueue<Tuple>();
-		ArrayList<PriorityQueue<Tuple>> tableOfTables = new ArrayList<PriorityQueue<Tuple>>();
-		try {
-			String path = strTableName + File.separator + "Page" + 1 + ".class";
-			FileInputStream fileIn = new FileInputStream(path);
-			ObjectInputStream in = null;
-			if (fileIn.available() != 0) {
-				for (int i = 2;; i++) {
-					if (fileIn.available() != 0) {
-						in = new ObjectInputStream(fileIn);
-						PriorityQueue<Tuple> tableTmp = (PriorityQueue<Tuple>) in.readObject();
-						tableOfTables.add(tableTmp);
-					}
-					path = strTableName + File.separator + "Page" + i + ".class";
-					File f = new File(path);
-					if (f.isFile() && f.canRead()) {
-						fileIn = new FileInputStream(path);
-					} else
-						break;
-				}
-				in.close();
-				fileIn.close();
-				System.out.println("tableOfTables size : " + tableOfTables.size());
-				for (int i = 0; i < tableOfTables.size(); i++) {
-					int queueInitialSize = tableOfTables.get(i).size();
-					for (int j = 0; j < queueInitialSize; j++) {
-						table.add(tableOfTables.get(i).remove());
-
-					}
-				}
-				printTuples(table);
-				return table;
-			}
-		} catch (IOException i) {
-			throw new DBAppException("Database is non existant");
-		} catch (ClassNotFoundException c) {
-			throw new DBAppException("Class is non existant");
-		}
-		return table;
-	}
-
-	public static void WriteBrinFile(String strTableName, PriorityQueue<Tuple> table, int n) {
-		try {
-			FileOutputStream fileOut = null;
-			ObjectOutputStream out = null;
-			System.out.println("table size : " + table.size());
-			int tableInitialSizeModN = table.size() / n;
-			for (int i = 0; i <= tableInitialSizeModN; i++) {
-				String path = strTableName + File.separator + "Page" + (i + 1) + ".class";
-				fileOut = new FileOutputStream(new File(path));
-				out = new ObjectOutputStream(fileOut);
-				PriorityQueue<Tuple> tableTmp = new PriorityQueue<Tuple>();
-				for (int k = 0; ((k % n != 0 || k == 0) && !(table.isEmpty())); k++) {
-					tableTmp.add(table.remove());
-				}
-				out.writeObject(tableTmp);
-			}
-			out.close();
-			fileOut.close();
-			System.out.println("Job Done");
-		} catch (IOException i) {
-			i.printStackTrace();
-		}
-	}
+	
 	
 	// ==============================================================================
 
@@ -767,7 +706,9 @@ public class DBApp {
 		boolean tableFound = false;
 		boolean colFound = false;
 		ArrayList<ArrayList<Object>> allBrinoftable = new ArrayList<>();
-	
+		ArrayList positionType=GetColumnPosition(strColName,metadataArray);
+		int colPostion = (int)positionType.get(1);
+		String colType = (String)positionType.get(0);
 		for (int l = 0; l < metadataArray.size(); l++) {
 
 			String[] metaArray = metadataArray.get(l).split(",");
@@ -777,16 +718,17 @@ public class DBApp {
 
 				if (metaArray[1].equals(strColName)) {
 					colFound = true;
-
+					File dir = new File(strTableName+File.separator+"Index"+strColName);
+					dir.mkdir();
 					if (metaArray[2].equals("TRUE") && metaArray[3].equals("FALSE")) {
 						// Set Index to True in Metadata
 						ArrayList<PriorityQueue> table = ReadFilesBrin(strTableName);
 						for(int j=0;j<table.size();j++){
 							PriorityQueue<Tuple> q = table.get(j);
-							Object[] qtoArray =	q.toArray();
+							
 							//might get a null pointer here 
 							allBrinoftable.get(j).add(q.peek().key); //min
-							allBrinoftable.get(j).add(qtoArray[q.size()-1]);//max
+							allBrinoftable.get(j).add(getTuple(q, q.size()-1));//max
 							allBrinoftable.get(j).add(j);//pointer equivalent to page number
 						}
 
@@ -795,7 +737,7 @@ public class DBApp {
 					else if (metaArray[2].equals("FALSE") && metaArray[3].equals("FALSE")) {
 						ArrayList<PriorityQueue> table = ReadFilesBrin(strTableName);//entire table
 						ArrayList<nonClustering> dense = new ArrayList<nonClustering>();
-						int x=5; //this will come from the method that gets the place of the column from heshams method
+						int x=colPostion; //this will come from the method that gets the place of the column from heshams method
 						for(int i=0;i<table.size();i++){
 							PriorityQueue<Tuple> pq = (PriorityQueue<Tuple>) table.get(i);
 							int tuplelocation =0;
@@ -815,7 +757,14 @@ public class DBApp {
 							}
 						Collections.sort(dense);
 						
-						ArrayList<ArrayList<nonClustering>> entirebrin = new ArrayList<ArrayList<nonClustering>>();
+						//ArrayList<ArrayList<nonClustering>> entirebrin = new ArrayList<ArrayList<nonClustering>>();
+						
+						ArrayList<ArrayList<nonClustering>> entirebrin=BrinDenseDivision(dense, 200);
+						
+						dir = new File(strTableName+File.separator+"Index"+File.separator+strColName+"Dense");
+						dir.mkdir();
+						WriteBrinFileDense(strTableName, strColName, entirebrin);
+						
 						//we need to load every 200 values in dense in an arraylist of nonclustering then put it in entirebrin
 						//we need to save this file
 						//ArrayList<ArrayList<Object>> allBrinoftable = new ArrayList<>();
@@ -825,6 +774,7 @@ public class DBApp {
 							//might get a null pointer
 							allBrinoftable.get(i).add(page.get(0).value); //min
 							allBrinoftable.get(i).add(page.get(page.size()-1).value);//max
+							allBrinoftable.get(i).add(page.get(i));
 						}
 						
 					}
@@ -844,10 +794,157 @@ public class DBApp {
 
 		if(!allBrinoftable.isEmpty()){
 			//here we need serialize every 15 arraylists in allBrinoftable to a page  
+			
+			String firstPagedir = strTableName+File.separator+"Index" + File.separator + strColName+File.separator+"Page1.class";
+			File f = new File(firstPagedir);
+			f.getParentFile().mkdirs();
+			f.createNewFile();
+			WriteBrinFile(strTableName, allBrinoftable, 15);
 		}
 		
 	}
 	
+	
+	//============================================================
+	public static ArrayList<ArrayList<nonClustering>> BrinDenseDivision(ArrayList<nonClustering> dense, int n) {
+		System.out.println("table size : " + dense.size());
+		ArrayList<ArrayList<nonClustering>> array=new ArrayList<ArrayList<nonClustering>>();
+		int tableInitialSizeModN = dense.size() / n;
+		for (int i = 0; i <= tableInitialSizeModN; i++) {
+			ArrayList<nonClustering> tableTmp = new ArrayList<nonClustering>();
+			for (int k = 0; ((k % n != 0 || k == 0) && !(dense.isEmpty())); k++) {
+				tableTmp.add(dense.get(k));
+			}
+			array.add(tableTmp);
+		}
+		return array;
+	}
+	public static void WriteBrinFileDense(String strTableName, String strColName,ArrayList<ArrayList<nonClustering>> table) {
+		try {
+			FileOutputStream fileOut = null;
+			ObjectOutputStream out = null;
+			System.out.println("table size : " + table.size());
+			for (int i = 0; i <= table.size(); i++) {
+				//the page might have not been init rabeena yostor
+				String path = strTableName+File.separator+"Index"+File.separator+strColName+"Dense"+ File.separator + "Page" + (i + 1) + ".class";
+				fileOut = new FileOutputStream(new File(path));
+				out = new ObjectOutputStream(fileOut);
+				ArrayList<nonClustering> tableTmp = table.get(i);
+				out.writeObject(tableTmp);
+			}
+			out.close();
+			fileOut.close();
+			System.out.println("Job Done");
+		} catch (IOException i) {
+			i.printStackTrace();
+		}
+	}
+	public static void WriteBrinFile(String strTableName, ArrayList<ArrayList<Object>> table, int n) {
+		try {
+			FileOutputStream fileOut = null;
+			ObjectOutputStream out = null;
+			System.out.println("table size : " + table.size());
+			int tableInitialSizeModN = table.size() / n;
+			for (int i = 0; i <= tableInitialSizeModN; i++) {
+				String path = strTableName+File.separator+"Index"+ File.separator + "Page" + (i + 1) + ".class";
+				fileOut = new FileOutputStream(new File(path));
+				out = new ObjectOutputStream(fileOut);
+				ArrayList<Object> tableTmp = new ArrayList<Object>();
+				for (int k = 0; ((k % n != 0 || k == 0) && !(table.isEmpty())); k++) {
+					tableTmp.add(table.get(k));
+				}
+				out.writeObject(tableTmp);
+			}
+			out.close();
+			fileOut.close();
+			System.out.println("Job Done");
+		} catch (IOException i) {
+			i.printStackTrace();
+		}
+	}
+	//============================================================
+	public static ArrayList<ArrayList<Object>> ReadBrinfiles(String strTableName,String strColName) throws IOException, DBAppException {
+		ArrayList<ArrayList<Object>> table = new ArrayList<ArrayList<Object>>();
+		ArrayList<ArrayList<ArrayList<Object>>> tableOfTables = new ArrayList<ArrayList<ArrayList<Object>>>();
+		try {
+			String path = strTableName+File.separator+"Index" + File.separator + strColName+File.separator+ "Page" +  1 + ".class";
+			FileInputStream fileIn = new FileInputStream(path);
+			ObjectInputStream in = null;
+			if (fileIn.available() != 0) {
+				for (int i = 2;; i++) {
+					if (fileIn.available() != 0) {
+						in = new ObjectInputStream(fileIn);
+						ArrayList<ArrayList<Object>> tableTmp = (ArrayList<ArrayList<Object>>) in.readObject();
+						tableOfTables.add(tableTmp);
+					}
+					path = strTableName+File.separator+"Index" + File.separator + strColName+File.separator+ "Page" + (i + 1) + ".class";
+					File f = new File(path);
+					if (f.isFile() && f.canRead()) {
+						fileIn = new FileInputStream(path);
+					} else
+						break;
+				}
+				in.close();
+				fileIn.close();
+				System.out.println("tableOfTables size : " + tableOfTables.size());
+				for (int i = 0; i < tableOfTables.size(); i++) {
+					int queueInitialSize = tableOfTables.get(i).size();
+					for (int j = 0; j < queueInitialSize; j++) {
+						table.add((tableOfTables.get(i)).remove(i));
+
+					}
+				}
+				return table;
+			}
+		} catch (IOException i) {
+			throw new DBAppException("Database is non existant");
+		} catch (ClassNotFoundException c) {
+			throw new DBAppException("Class is non existant");
+		}
+		return table;
+	}
+	//===========================================================
+	public static ArrayList<ArrayList<Object>> ReadDenseFiles(String strTableName,String strColName) throws IOException, DBAppException {
+		ArrayList<ArrayList<Object>> table = new ArrayList<ArrayList<Object>>();
+		ArrayList<ArrayList<ArrayList<Object>>> tableOfTables = new ArrayList<ArrayList<ArrayList<Object>>>();
+		try {
+			String path = strTableName+File.separator+"Index"+File.separator+strColName+"Dense"+ "Page" +  1 + ".class";
+			FileInputStream fileIn = new FileInputStream(path);
+			ObjectInputStream in = null;
+			if (fileIn.available() != 0) {
+				for (int i = 2;; i++) {
+					if (fileIn.available() != 0) {
+						in = new ObjectInputStream(fileIn);
+						ArrayList<ArrayList<Object>> tableTmp = (ArrayList<ArrayList<Object>>) in.readObject();
+						tableOfTables.add(tableTmp);
+					}
+					path = strTableName+File.separator+"Index"+File.separator+strColName+"Dense"+ "Page" + (i + 1) + ".class";
+					File f = new File(path);
+					if (f.isFile() && f.canRead()) {
+						fileIn = new FileInputStream(path);
+					} else
+						break;
+				}
+				in.close();
+				fileIn.close();
+				System.out.println("tableOfTables size : " + tableOfTables.size());
+				for (int i = 0; i < tableOfTables.size(); i++) {
+					int queueInitialSize = tableOfTables.get(i).size();
+					for (int j = 0; j < queueInitialSize; j++) {
+						table.add((tableOfTables.get(i)).remove(i));
+
+					}
+				}
+				return table;
+			}
+		} catch (IOException i) {
+			throw new DBAppException("Database is non existant");
+		} catch (ClassNotFoundException c) {
+			throw new DBAppException("Class is non existant");
+		}
+		return table;
+	}
+	//============================================================
 	public static boolean isIndexed(String strTableName, String strColName) throws IOException, DBAppException{
 		ArrayList<String> metadataArray = readCSV("metadata.csv", strTableName);
 		boolean tableFound = false;
