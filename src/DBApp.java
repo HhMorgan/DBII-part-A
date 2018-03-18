@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -639,7 +641,12 @@ public class DBApp {
 	public static void updateTable(String strTableName, String strKey, Hashtable<String, Object> htblColNameValue)
 			throws DBAppException, IOException {
 		emptyHashObject(htblColNameValue);
-		PriorityQueue<Tuple> table = Readfiles(strTableName);
+
+		//method that loads the brin index
+		ArrayList<ArrayList<ArrayList<Object>>> brin = null;
+				
+		PriorityQueue<Tuple> table= Readfiles(strTableName);
+
 		ArrayList<String> metadataArray = readCSV("metadata.csv", strTableName);
 		ArrayList trioTuple = loadHashtableInput(htblColNameValue, metadataArray);
 		Tuple tuple = (Tuple) trioTuple.get(0);
@@ -696,4 +703,222 @@ public class DBApp {
 		br.close();
 		return lines;
 	}
+	public static ArrayList<PriorityQueue> ReadFilesBrin(String strTableName) throws IOException, DBAppException {
+		ArrayList<PriorityQueue> tableOfTables = new ArrayList<PriorityQueue>();
+		try {
+			// path is the directory of the stored pages, we start with 1 as its
+			// the first entry in our storage system
+			String path = strTableName + File.separator + "Page" + 1 + ".class";
+			// fileIn reads the file from the path
+			FileInputStream fileIn = new FileInputStream(path);
+			ObjectInputStream in = null;
+			// the condition checks if the file exists or is that table non
+			// existent in the first place
+			if (fileIn.available() != 0) {
+				// we start the loop with i=2 because we will fetch the first
+				// file first then we start looping
+				// this point will be explained better inside the loop
+				for (int i = 2;; i++) {
+					// the condition checks if the page exists
+					if (fileIn.available() != 0) {
+						// we load the content of the page
+						in = new ObjectInputStream(fileIn);
+						// we use a tmp 2D array that we will store in
+						// tableOfTables
+						PriorityQueue<ArrayList> tableTmp = (PriorityQueue<ArrayList>) in.readObject();
+						tableOfTables.add(tableTmp);
+					}
+					// we initialize the directory for the next page
+					path = strTableName + File.separator + "Page" + i + ".class";
+					File f = new File(path);
+					// checks if the page exists or not
+					if (f.isFile() && f.canRead()) {
+						// loads the next page
+						fileIn = new FileInputStream(path);
+					} else // the pages have ended, so we break out of the
+						// reading process
+						break;
+					// printTuples(table);
+				}
+				in.close();
+				fileIn.close();
+				// This line is for debugging purposes only
+				System.out.println("tableOfTables size : " + tableOfTables.size());
+				// loads the content of the 3D array (tableOfTables) into the 2D
+				// array (table) to ease the process of handling arrays
+				// as manipulating a 2D array is easier than 3D array and will
+				// also decrease the time & space complexity of the program
+
+				// This line is for debugging purposes only
+				//printTuples(table);
+				// returns the table to be used in the main program
+				return tableOfTables;
+			}
+		} catch (IOException i) {
+			throw new DBAppException("Database is non existant");
+		} catch (ClassNotFoundException c) {
+			throw new DBAppException("Class is non existant");
+		}
+		return tableOfTables;
+	}
+	
+	public static void createBRINIndex(String strTableName, String strColName) throws DBAppException, IOException {
+		ArrayList<String> metadataArray = readCSV("metadata.csv", strTableName);
+		boolean tableFound = false;
+		boolean colFound = false;
+		ArrayList<ArrayList<Object>> allBrinoftable = new ArrayList<>();
+	
+		for (int l = 0; l < metadataArray.size(); l++) {
+
+			String[] metaArray = metadataArray.get(l).split(",");
+
+			if (metaArray[0].equals(strTableName)) {
+				tableFound = true;
+
+				if (metaArray[1].equals(strColName)) {
+					colFound = true;
+
+					if (metaArray[2].equals("TRUE") && metaArray[3].equals("FALSE")) {
+						// Set Index to True in Metadata
+						ArrayList<PriorityQueue> table = ReadFilesBrin(strTableName);
+						for(int j=0;j<table.size();j++){
+							PriorityQueue<Tuple> q = table.get(j);
+							Object[] qtoArray =	q.toArray();
+							//might get a null pointer here 
+							allBrinoftable.get(j).add(q.peek().key); //min
+							allBrinoftable.get(j).add(qtoArray[q.size()-1]);//max
+							allBrinoftable.get(j).add(j);//pointer equivalent to page number
+						}
+
+					}
+
+					else if (metaArray[2].equals("FALSE") && metaArray[3].equals("FALSE")) {
+						ArrayList<PriorityQueue> table = ReadFilesBrin(strTableName);//entire table
+						ArrayList<nonClustering> dense = new ArrayList<nonClustering>();
+						int x=5; //this will come from the method that gets the place of the column from heshams method
+						for(int i=0;i<table.size();i++){
+							PriorityQueue<Tuple> pq = (PriorityQueue<Tuple>) table.get(i);
+							int tuplelocation =0;
+							while(!pq.isEmpty()){
+							Tuple t = pq.poll();
+							if(dense.contains(t.tupleData.get(x))){
+								//very stupid not sure it will work
+								dense.get(dense.indexOf(t.tupleData.get(x))).pointers.add(new Pointer(i, tuplelocation));
+							}
+							else {
+								ArrayList<Pointer> pointers = new ArrayList<Pointer>();
+								pointers.add(new Pointer(i,tuplelocation));
+								dense.add(new nonClustering(t.tupleData.get(x), pointers ));
+								}
+							tuplelocation++;	
+						}
+							}
+						Collections.sort(dense);
+						
+						ArrayList<ArrayList<nonClustering>> entirebrin = new ArrayList<ArrayList<nonClustering>>();
+						//we need to load every 200 values in dense in an arraylist of nonclustering then put it in entirebrin
+						//we need to save this file
+						//ArrayList<ArrayList<Object>> allBrinoftable = new ArrayList<>();
+						//creating a brin for the nonclustering value
+						for(int i=0;i< entirebrin.size();i++){
+							ArrayList<nonClustering> page = entirebrin.get(i);
+							//might get a null pointer
+							allBrinoftable.get(i).add(page.get(0).value); //min
+							allBrinoftable.get(i).add(page.get(page.size()-1).value);//max
+						}
+						
+					}
+					}
+				}
+			}
+
+		
+
+		if (!tableFound) {
+			throw new DBAppException("Table Not Found.");
+		}
+
+		if (!colFound) {
+			throw new DBAppException("Column Not Found.");
+		}
+
+		if(!allBrinoftable.isEmpty()){
+			//here we need serialize every 15 arraylists in allBrinoftable to a page  
+		}
+		
+	}
+	
+	public static boolean isIndexed(String strTableName, String strColName) throws IOException, DBAppException{
+		ArrayList<String> metadataArray = readCSV("metadata.csv", strTableName);
+		boolean tableFound = false;
+		boolean colFound = false;
+		for (int i = 0; i < metadataArray.size(); i++) {
+
+			String[] metaArray = metadataArray.get(i).split(",");
+
+			if (metaArray[0].equals(strTableName)) {
+				tableFound = true;
+
+				if (metaArray[1].equals(strColName)) {
+					colFound = true;
+					if(metaArray[3].equals("TRUE")) return true;
+					else return false;
+				}
+				}
+			}
+		if (!tableFound) {
+			throw new DBAppException("Table Not Found.");
+		}
+
+		if (!colFound) {
+			throw new DBAppException("Column Not Found.");
+		}
+		return false;
+	}
+	
+	public static Tuple getTuple(PriorityQueue<Tuple> pq, int index){
+		while(index-- >0){
+			pq.poll();
+		}
+		return pq.peek();
+	}
+	
 }
+////this is my attempt at creating the nonclustering key index,not actual method not its right place
+//	public static void nonclusteredindex(){
+//		String strTableName;
+//		ArrayList<PriorityQueue> table=null; //= ReadFilesBrin(strTableName);//entire table
+//		ArrayList<nonClustering> dense = new ArrayList<nonClustering>();
+//		int x=5; //this will come from the method that gets the place of the column from heshams method
+//		for(int i=0;i<table.size();i++){
+//			PriorityQueue<Tuple> pq = (PriorityQueue<Tuple>) table.get(i);
+//			int tuplelocation =0;
+//			while(!pq.isEmpty()){
+//			Tuple t = pq.poll();
+//			if(dense.contains(t.tupleData.get(x))){
+//				//very stupid not sure it will work
+//				dense.get(dense.indexOf(t.tupleData.get(x))).pointers.add(new Pointer(i, tuplelocation));
+//			}
+//			else {
+//				ArrayList<Pointer> pointers = new ArrayList<Pointer>();
+//				pointers.add(new Pointer(i,tuplelocation));
+//				dense.add(new nonClustering(t.tupleData.get(x), pointers ));
+//				}
+//			tuplelocation++;	
+//		}
+//			}
+//		Collections.sort(dense);
+//		
+//		ArrayList<ArrayList<nonClustering>> entirebrin = new ArrayList<ArrayList<nonClustering>>();
+//		//we need to load every 200 values in dense in an arraylist of nonclustering then put it in entirebrin
+//		//we need to save this file
+//		ArrayList<ArrayList<Object>> allBrinoftable = new ArrayList<>();
+//		//creating a brin for the nonclustering value
+//		for(int i=0;i< entirebrin.size();i++){
+//			ArrayList<nonClustering> page = entirebrin.get(i);
+//			//might get a null pointer
+//			allBrinoftable.get(i).add(page.get(0).value); //min
+//			allBrinoftable.get(i).add(page.get(page.size()-1).value);//max
+//		}
+//		
+//	}
