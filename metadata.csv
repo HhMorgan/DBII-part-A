@@ -14,22 +14,6 @@ T1,name,java.lang.String,false,false
 T1,id,java.lang.Integer,true,false
 T1,TouchDate,java.util.Date,false,false
 Table Name,Column Name,Column Type,Key,Indexed
-Table Name,Column Name,Column Type,Key,Indexed
-Table Name,Column Name,Column Type,Key,Indexed
-Table Name,Column Name,Column Type,Key,Indexed
-Table Name,Column Name,Column Type,Key,Indexed
-Table Name,Column Name,Column Type,Key,Indexed
-Table Name,Column Name,Column Type,Key,Indexed
-Table Name,Column Name,Column Type,Key,Indexed
-Table Name,Column Name,Column Type,Key,Indexed
-Table Name,Column Name,Column Type,Key,Indexed
-Table Name,Column Name,Column Type,Key,Indexed
-Table Name,Column Name,Column Type,Key,Indexed
-Table Name,Column Name,Column Type,Key,Indexed
-Table Name,Column Name,Column Type,Key,Indexed
-Table Name,Column Name,Column Type,Key,Indexed
-Table Name,Column Name,Column Type,Key,Indexed
-Table Name,Column Name,Column Type,Key,Indexed
 T1,gpa,java.lang.double,false,false
 Table Name,Column Name,Column Type,Key,Indexed
 T4,gpa,java.lang.double,false,true
@@ -37,7 +21,12 @@ T4,name,java.lang.String,false,false
 T4,id,java.lang.Integer,true,false
 T4,TouchDate,java.util.Date,false,false
 Table Name,Column Name,Column Type,Key,Indexed
-T5,gpa,java.lang.double,false,true
-T5,name,java.lang.String,false,true
-T5,id,java.lang.Integer,true,true
+T5,gpa,java.lang.double,false,false
+T5,name,java.lang.String,false,false
+T5,id,java.lang.Integer,true,false
 T5,TouchDate,java.util.Date,false,false
+Table Name,Column Name,Column Type,Key,Indexed
+T6,gpa,java.lang.double,false,true
+T6,name,java.lang.String,false,false
+T6,id,java.lang.Integer,true,false
+T6,TouchDate,java.util.Date,false,false
