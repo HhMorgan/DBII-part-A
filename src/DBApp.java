@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -17,11 +20,11 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class DBApp {
 
-	public static void main(String[] args) throws DBAppException, IOException {
+	public static void main(String[] args) throws DBAppException, IOException, ParseException {
 		/*
 		 * Hashtable<String, String> ht = new Hashtable<>(); ht.put("id",
 		 * "java.lang.Integer"); ht.put("age", "java.lang.Integer");
@@ -97,10 +100,100 @@ public class DBApp {
 		// t0 createTable( "Table2", "id", htblColNameType );
 		// t1 Hashtable htblColNameType = new Hashtable( );
 		// Hashtable htblColNameValue = new Hashtable( );
-		String strTableName = "T6";
-		htblColNameValue.put("id", "java.lang.Integer");
+		String strTableName = "T7";
+		/*htblColNameValue.put("id", "java.lang.Integer");
 		htblColNameValue.put("name", "java.lang.String");
 		htblColNameValue.put("gpa", "java.lang.double");
+		createTable( strTableName, "id", htblColNameValue );
+		int [] id = {1, 51,1234,4555,5454,9777,9999,2343435};
+		String [] names={"Ahmed Morgan","Hesham Morgan","Rana Ezzat","Mohamed Hesham","Mariam Dessouky","Omar Shaker","Marwa Gaser","Ahmed Noor"};
+		Double [] gpas={0.97,0.4,0.99,0.2,0.5,0.8,0.2,0.77};
+		for(int i=0;i<8;i++){
+		Hashtable d = new Hashtable();
+		d.put("id", new Integer(id[i]));
+		d.put("name", new String(names[i]));
+		d.put("gpa", new Double(gpas[i]));
+		insertIntoTable(strTableName, d);
+		}
+		*/
+		//=================================================================
+		
+		String string = "March 18, 2018";
+		DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
+		Date date = format.parse(string);
+		System.out.println(date);
+ 
+		date.setHours(21);
+		date.setMinutes(58);
+		date.setSeconds(00);
+ 
+		 string = "March 5, 2018";
+		 format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
+		Date datez = format.parse(string);
+		System.out.println(date);
+ 
+		datez.setHours(21);
+		datez.setMinutes(58);
+		datez.setSeconds(00);
+ 
+		//Test for date
+	    /*Object[] myArray = {date,datez};
+	    String[] myArrayString = {"==",">"};
+	    Call this :
+	    PriorityQueue<Tuple> result =  selectFromTable(strTableName,"date",myArray,myArrayString);
+     	*/
+ 
+ 
+		//Test for id
+		/*
+		Object[] myArray = {51,9777};
+		String[] myArrayString = {">=","<="};
+		Call this :
+		PriorityQueue<Tuple> result =  selectFromTable(strTableName,"id",myArray,myArrayString);
+		*/
+		/*Object[] myArray = {1,5000};
+		String[] myArrayString = {">=","<"};
+		Call this :
+		PriorityQueue<Tuple> result =  selectFromTable(strTableName,"id",myArray,myArrayString);
+	    */
+ 
+ 
+		//Test for gpa
+		/*Object[] myArray = {0.8,0.2};
+		String[] myArrayString = {"<=",">"};
+		Call this :
+				PriorityQueue<Tuple> result =  selectFromTable(strTableName,"gpa",myArray,myArrayString);		
+		*/
+ 
+ 
+		//Test for name
+				Object[] myArray = {"Rana Ezzat","Mohamed Hesham"};
+				String[] myArrayString = {"<=",">="};
+		//Calling name
+		PriorityQueue<Tuple> result =  selectFromTable(strTableName,"name",myArray,myArrayString);
+ 
+		System.out.println("HERE IS THE PRINT");
+		printTuples(result);
+ 
+		
+		//=================================================================
+		
+		// I used this table for the tests :
+		/*
+		 * 
+		 * 
+		 * [0.97, Ahmed Morgan, 1, Wed Mar 07 01:24:27 EET 2018]
+		 * [0.4, Hesham Morgan, 51, Sun Mar 18 21:59:36 EET 2018]
+		 * [0.99, Rana Ezzat, 1234, Sun Mar 18 21:58:00 EET 2018]
+		 * [0.2, Mohamed Hesham, 4555, Sun Mar 18 22:03:50 EET 2018]
+		 * [0.5, Mariam Dessouky, 5454, Sun Mar 18 21:59:04 EET 2018]
+		 * [0.8, Omar Shaker, 9777, Sun Mar 18 22:00:08 EET 2018]
+		 * [0.2, Marwa Gaser, 9999, Sun Mar 18 23:03:32 EET 2018]
+		 * [0.77, Ahmed Noor, 2343435, Sun Mar 18 21:52:38 EET 2018]
+		 * 
+		 * 
+		 */
+
 		// createTable( strTableName, "id", htblColNameValue );
 		/*
 		 * Hashtable htblColNameValue1 = new Hashtable();
@@ -126,14 +219,16 @@ public class DBApp {
 		 */
 		// deleteFromTable(strTableName,htblColNameValue1);
 		// insertIntoTable(strTableName,htblColNameValue1);
-		createBRINIndex(strTableName, "gpa");
-		System.out.println(Arrays.toString(ReadBrinfiles(strTableName, "gpa").toArray()));
+		// createBRINIndex(strTableName, "gpa");
+		// System.out.println(Arrays.toString(ReadBrinfiles(strTableName,
+		// "gpa").toArray()));
 
 		// t2 updating
-		Hashtable x = new Hashtable();
-		x.put("id", new Integer(2343433));
-		x.put("name", new String("guy Noor"));
-		x.put("gpa", new Double(0.97));
+		/*
+		 * Hashtable x = new Hashtable(); x.put("id", new Integer(2343433));
+		 * x.put("name", new String("guy Noor")); x.put("gpa", new
+		 * Double(0.97));
+		 */
 		// updateTable(strTableName,"id",x);
 		// t3 wrong primary
 		// t3 x.put("id", new Integer( 2343432 ));
@@ -152,10 +247,11 @@ public class DBApp {
 		// t6 x.put("gpa",new Double(0.97));
 		// t6 updateTable("Table1","id",x);
 		// t7 deleting
-		Hashtable d = new Hashtable();
-		d.put("id", new Integer(2343433));
-		d.put("name", new String("guy Noor"));
-		d.put("gpa", new Double(0.97));
+		/*
+		 * Hashtable d = new Hashtable(); d.put("id", new Integer(2343433));
+		 * d.put("name", new String("guy Noor")); d.put("gpa", new
+		 * Double(0.97));
+		 */
 		// deleteFromTable(strTableName,d);
 		// =====================================================================================
 		// String strTableName = "Table1";
@@ -890,19 +986,20 @@ public class DBApp {
 			for (int k = 0; ((k % n != 0 || k == 0) && (!table.isEmpty())); k++) {
 				tableTmp.add(table.remove(0));
 			}
-			//int tableInitialSizeModN = table.size() / n;
-			//System.out.println("tableInitialSizeModN : "+tableInitialSizeModN);
+			// int tableInitialSizeModN = table.size() / n;
+			// System.out.println("tableInitialSizeModN :
+			// "+tableInitialSizeModN);
 			for (int i = 0; i < tableTmp.size(); i++) {
 				String path = strTableName + File.separator + "Index" + File.separator + strColName + File.separator
 						+ "Brin" + File.separator + "Page" + (i + 1) + ".class";
 				fileOut = new FileOutputStream(new File(path));
 				out = new ObjectOutputStream(fileOut);
-				
+
 				// System.out.println("Dense after loop :
 				// "+Arrays.toString(dense.toArray()));
 				System.out.println("tabletmp size : " + tableTmp.size());
-				//for (int l = 0; l < tableTmp.size(); l++)
-					out.writeObject(tableTmp.get(i));
+				// for (int l = 0; l < tableTmp.size(); l++)
+				out.writeObject(tableTmp.get(i));
 			}
 			out.close();
 			fileOut.close();
@@ -929,7 +1026,7 @@ public class DBApp {
 						ArrayList<ArrayList<Object>> tableTmp = (ArrayList<ArrayList<Object>>) in.readObject();
 						tableOfTables.add(tableTmp);
 					}
-					
+
 					path = strTableName + File.separator + "Index" + File.separator + strColName + File.separator
 							+ "Brin" + File.separator + "Page" + (i + 1) + ".class";
 					File f = new File(path);
@@ -944,10 +1041,9 @@ public class DBApp {
 				// System.out.println("tableOfTables size : " +
 				// tableOfTables.size());
 				for (int i = 0; i < tableOfTables.size(); i++) {
-					
-						table.addAll(tableOfTables.remove(i));
 
-					
+					table.addAll(tableOfTables.remove(i));
+
 				}
 				return table;
 			}
@@ -1136,4 +1232,229 @@ public class DBApp {
 		return -1;
 	}
 
+	// ==================================================================================
+	public static PriorityQueue<Tuple> selectFromTable(String strTableName, String strColumnName, Object[] objarrValues,
+			String[] strarrOperators) throws DBAppException, IOException {
+		ArrayList<String> metadataArray = readCSV("metadata.csv", strTableName);
+		PriorityQueue<Tuple> result = new PriorityQueue<Tuple>();
+		PriorityQueue<Tuple> table = Readfiles(strTableName);
+
+		ArrayList posarray = GetColumnPosition(strColumnName, metadataArray);
+		String type = (String) posarray.get(0);
+		int position = (int) posarray.get(1);
+
+		for (int s = 0; s < objarrValues.length; s++) {
+
+			Object value = objarrValues[s];
+			Object operator = strarrOperators[s];
+
+			/*
+			 * System.out.println("Operator : " + operator + " Value : "+
+			 * value); System.out.println("THE COUNTER "+s);
+			 */
+
+			while (!(table.isEmpty())) {
+				Tuple t = table.remove();
+				Object tocheck = t.tupleData.get(position);
+
+				if (operator.equals("==")) {
+
+					if (type.equalsIgnoreCase("java.lang.double")) {
+
+						if (((double) (tocheck)) == ((double) value)) {
+
+							result.add(t);
+						}
+					}
+
+					if (type.equalsIgnoreCase("java.lang.string")) {
+
+						if (tocheck.equals(value)) {
+							result.add(t);
+						}
+					}
+
+					if (type.equalsIgnoreCase("java.util.date")) {
+
+						int compr = ((Date) (tocheck)).compareTo((Date) value);
+
+						/*
+						 * //if(compr==0) SimpleDateFormat fmt = new
+						 * SimpleDateFormat("yyyyMMdd"); //return
+						 * fmt.format(date1).equals(fmt.format(date2));
+						 */ Date date1 = (Date) tocheck;
+						Date date2 = (Date) value;
+						// if(fmt.format(date1).equals(fmt.format(date2)))
+
+						if (sameDate(date1, date2)) {
+
+							result.add(t);
+						}
+					}
+					/*
+					 * if(tocheck==value) result.add(value);
+					 */
+					if (type.equalsIgnoreCase("java.lang.integer")) {
+						if ((int) tocheck == (int) value) {
+
+							result.add(t);
+						}
+					}
+
+				}
+				if (operator.equals("<=")) {
+
+					if (type.equalsIgnoreCase("java.lang.double")) {
+
+						if ((((double) (tocheck)) == ((double) value)) || (((double) (tocheck)) < ((double) value))) {
+							result.add(t);
+						}
+					}
+
+					if (type.equalsIgnoreCase("java.lang.string")) {
+						int compr = ((String) (tocheck)).compareTo((String) value);
+
+						if (compr < 0 || compr == 0) {
+							result.add(t);
+						}
+					}
+
+					if (type.equalsIgnoreCase("java.util.date")) {
+						int compr = ((Date) (tocheck)).compareTo((Date) value);
+						Date date1 = (Date) tocheck;
+						Date date2 = (Date) value;
+						if (compr < 0 || sameDate(date1, date2)) {
+							result.add(t);
+						}
+					}
+
+					if (type.equalsIgnoreCase("java.lang.integer")) {
+						if (((int) tocheck < (int) value) || ((int) tocheck == (int) value)) {
+							result.add(t);
+						}
+					}
+
+				}
+				if (operator.equals(">=")) {
+					if (type.equalsIgnoreCase("java.lang.double")) {
+
+						if ((((double) (tocheck)) == ((double) value)) || (((double) (tocheck)) > ((double) value))) {
+
+							result.add(t);
+						}
+					}
+					if (type.equalsIgnoreCase("java.lang.string")) {
+
+						int compr = ((String) (tocheck)).compareTo((String) value);
+						if (compr > 0 || compr == 0) {
+
+							result.add(t);
+						}
+					}
+					if (type.equalsIgnoreCase("java.util.date")) {
+
+						int compr = ((Date) (tocheck)).compareTo((Date) value);
+						Date date1 = (Date) tocheck;
+						Date date2 = (Date) value;
+						if (compr > 0 || sameDate(date1, date2)) {
+
+							result.add(t);
+						}
+					}
+					if (type.equalsIgnoreCase("java.lang.integer")) {
+						if (((int) tocheck > (int) value) || ((int) tocheck == (int) value)) {
+							result.add(t);
+						}
+					}
+
+				}
+
+				if (operator.equals("<")) {
+					if (type.equalsIgnoreCase("java.lang.double")) {
+
+						if ((((double) (tocheck)) < ((double) value))) {
+
+							result.add(t);
+						}
+					}
+					if (type.equalsIgnoreCase("java.lang.string")) {
+
+						int compr = ((String) (tocheck)).compareTo((String) value);
+						if (compr < 0) {
+
+							result.add(t);
+						}
+					}
+
+					if (type.equalsIgnoreCase("java.util.date")) {
+
+						int compr = ((Date) (tocheck)).compareTo((Date) value);
+						Date date1 = (Date) tocheck;
+						Date date2 = (Date) value;
+						if (compr < 0 && !(sameDate(date1, date2))) {
+							result.add(t);
+						}
+					}
+
+					if (type.equalsIgnoreCase("java.lang.integer")) {
+						if (((int) tocheck < (int) value)) {
+							result.add(t);
+						}
+					}
+
+				}
+				if (operator.equals(">")) {
+					if (type.equalsIgnoreCase("java.lang.double")) {
+
+						if ((((double) (tocheck)) > ((double) value))) {
+							result.add(t);
+						}
+					}
+					if (type.equalsIgnoreCase("java.lang.string")) {
+
+						int compr = (((String) (tocheck))).compareTo(((String) (value)));
+						if (compr > 0) {
+
+							result.add(t);
+						}
+					}
+					if (type.equalsIgnoreCase("java.util.date")) {
+
+						int compr = ((Date) (tocheck)).compareTo((Date) value);
+						Date date1 = (Date) tocheck;
+						Date date2 = (Date) value;
+						if (compr > 0 && !(sameDate(date1, date2))) {
+							result.add(t);
+						}
+					}
+					if (type.equalsIgnoreCase("java.lang.integer")) {
+						if (((int) tocheck > (int) value)) {
+							result.add(t);
+						}
+					}
+
+				}
+
+			}
+			table = new PriorityQueue<Tuple>(result);
+			result = new PriorityQueue<Tuple>();
+		}
+		return table;
+	}
+
+	public static boolean sameDate(Date date1, Date date2) {
+		if (date1.getDate() != date2.getDate())
+			return false;
+		if (date1.getDay() != date2.getDay())
+			return false;
+		if (date1.getYear() != date2.getYear())
+			return false;
+		if (date1.getHours() != date2.getHours())
+			return false;
+		if (date1.getMinutes() != date2.getMinutes())
+			return false;
+		if (date1.getSeconds() != date2.getSeconds())
+			return false;
+		return true;
+	}
 }

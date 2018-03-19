@@ -30,3 +30,8 @@ T6,gpa,java.lang.double,false,true
 T6,name,java.lang.String,false,false
 T6,id,java.lang.Integer,true,false
 T6,TouchDate,java.util.Date,false,false
+Table Name,Column Name,Column Type,Key,Indexed
+T7,gpa,java.lang.double,false,false
+T7,name,java.lang.String,false,false
+T7,id,java.lang.Integer,true,false
+T7,TouchDate,java.util.Date,false,false
