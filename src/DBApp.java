@@ -136,13 +136,12 @@ public class DBApp {
 		datez.setMinutes(58);
 		datez.setSeconds(00);
  
-		//Test for date
-	    /*Object[] myArray = {date,datez};
-	    String[] myArrayString = {"==",">"};
-	    Call this :
-	    PriorityQueue<Tuple> result =  selectFromTable(strTableName,"date",myArray,myArrayString);
-     	*/
- 
+		/*//Test for date
+	    Object[] myArray = {date,datez};
+	    String[] myArrayString = {">",">"};
+	   // Call this :
+	    PriorityQueue<Tuple> result =  selectFromTable(strTableName,"TouchDate",myArray,myArrayString);
+		 */
  
 		//Test for id
 		/*
