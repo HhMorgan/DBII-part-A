@@ -98,11 +98,11 @@ public class DBApp {
 		// t0 createTable( "Table2", "id", htblColNameType );
 		// t1 Hashtable htblColNameType = new Hashtable( );
 			//Hashtable htblColNameValue = new Hashtable( );
-			String strTableName = "T1";
+			String strTableName = "T5";
 			htblColNameValue.put("id", "java.lang.Integer");
 			htblColNameValue.put("name", "java.lang.String");
 			htblColNameValue.put("gpa", "java.lang.double");
-		createTable( strTableName, "id", htblColNameValue );
+		//createTable( strTableName, "id", htblColNameValue );
 			/*Hashtable htblColNameValue1 = new Hashtable();
 			htblColNameValue1.put("id", new Integer( 2343435 ));
 			htblColNameValue1.put("name",new String("Ahmed Nooor"));
@@ -115,17 +115,17 @@ public class DBApp {
 			}*/
 			//System.out.println((int)(Math.random()*(int)(Math.random()*1000)));
 			Hashtable htblColNameValue1 = new Hashtable();
-			for(int i=6000;i<6020;i++){
+			//for(int i=6000;i<6020;i++){
 			htblColNameValue1 = new Hashtable();
-			htblColNameValue1.put("id", new Integer(i));
-			htblColNameValue1.put("name",new String((String)NameArray[(int)(Math.random()*NameArray.length)]));
-			htblColNameValue1.put("gpa",new Double((Double)(Math.random()*5)));
-			insertIntoTable("T1", htblColNameValue1);
-			}
+			htblColNameValue1.put("id", new Integer(1));
+			htblColNameValue1.put("name",new String("C"));
+			htblColNameValue1.put("gpa",new Double(1.0));
 			
-			//		 insertIntoTable(strTableName,htblColNameValue1);
-				//	 createBRINIndex(strTableName,"gpa");
-			System.out.println(Arrays.toString(ReadBrinfiles("T1","gpa").toArray()));
+			//}
+			deleteFromTable(strTableName,htblColNameValue1);
+			//insertIntoTable(strTableName,htblColNameValue1);
+			//createBRINIndex(strTableName,"id");
+				System.out.println(Arrays.toString(ReadBrinfiles(strTableName,"name").toArray()));
 		 
 		// t2 updating
 		 Hashtable x = new Hashtable( );
@@ -517,7 +517,7 @@ public class DBApp {
 			String[] metaArray = metadataArray.get(i).split(",");
 			if (metaArray[1].equals(colName)) {
 				flag = true;
-				colPostion = i;
+				colPostion = i; 
 				colType = metaArray[2];
 				System.out.println("id : " + colPostion);
 				break;
@@ -581,7 +581,6 @@ public class DBApp {
 				// throw new DBAppException("The row doesn't exist");
 			}
 			// tuple.remove(((Tuple) tmpTuple).tupleData.size() - 1);
-
 		}
 		if (!flag) {
 			throw new DBAppException("The row doesn't exist");
@@ -599,7 +598,7 @@ public class DBApp {
 		emptyHashObject(htblColNameValue);
 
 		//method that loads the brin index
-//		ArrayList<ArrayList<ArrayList<Object>>> brin = null;
+		//ArrayList<ArrayList<ArrayList<Object>>> brin = null;
 				
 		PriorityQueue<Tuple> table= Readfiles(strTableName);
 
@@ -627,7 +626,6 @@ public class DBApp {
 				// throw new DBAppException("The row doesn't exist");
 			}
 			// tuple.remove(((Tuple) tmpTuple).tupleData.size() - 1);
-
 		}
 		if (!flag) {
 			throw new DBAppException("The row doesn't exist");
@@ -652,7 +650,6 @@ public class DBApp {
 		ArrayList<String> lines = new ArrayList<String>();
 		String newLine;
 		while ((newLine = br.readLine()) != null) {
-			// newLine = br.readLine();
 			String[] tmpArray = newLine.split(",");
 			if (tmpArray[0].equals(tableName))
 				lines.add(newLine);
@@ -661,7 +658,6 @@ public class DBApp {
 		return lines;
 	}
 	public static ArrayList<PriorityQueue<Tuple>> ReadFilesBrin(String strTableName) throws IOException, DBAppException {
-		//gffdxgchvjbkl;'kjlkhj'
 		ArrayList<PriorityQueue<Tuple>> tableOfTables = new ArrayList<PriorityQueue<Tuple>>();
 		try {
 			
@@ -732,29 +728,25 @@ public class DBApp {
 					dir.mkdir();
 					
 					if (metaArray[3].equals("true")) {
+						
 						indexingCSV(strTableName, strColName);
 						//System.out.println("cluster");
 						// Set Index to True in Metadata
 						ArrayList<PriorityQueue<Tuple>> table = ReadFilesBrin(strTableName);
 						//allBrinoftable = new ArrayList<ArrayList<Object>>();
-						for(int o=0;o<table.size();o++){
+						
+						for(int o=0;o<(int)(Math.ceil((double)table.size()/n));o++){
+							//System.out.println("guy there !");
 							allBrinoftable.add(new ArrayList<Object>());
 						}
-						System.out.println(table.size() + " "+allBrinoftable.size());
-					
-						//System.out.println(allBrinoftable.get(1));
-						//System.out.println(allBrinoftable.get(2));
-						for(int j=0;j<table.size();j++){
+						for(int j=0;j< table.size();j++){
 							PriorityQueue<Tuple> q = table.get(j);
-							
-							//might get a null pointer here 
-							System.out.println(j);
-							allBrinoftable.get(j).add(q.peek().key); //min
-							allBrinoftable.get(j).add(getTuple(q, q.size()-1).key);//max
-							allBrinoftable.get(j).add(j);//pointer equivalent to page number
+							//might get a null pointer
+							allBrinoftable.get(j/n).add(q.peek().key); //min
+							allBrinoftable.get(j/n).add(getTuple(q, q.size()-1).key);//max
+							allBrinoftable.get(j/n).add(j);
+							//(page.get(i)).pointers.get(0).page
 						}
-						System.out.println(allBrinoftable.get(0));
-
 					}
 					//(metaArray[3].equals("false") && metaArray[4].equals("false")
 					else if (metaArray[3].equals("false")) {
@@ -801,12 +793,15 @@ public class DBApp {
 							//System.out.println("guy there !");
 							allBrinoftable.add(new ArrayList<Object>());
 						}
+						System.out.println("Brin : "+Arrays.toString(entirebrin.toArray()));
 						for(int i=0;i< entirebrin.size();i++){
 							ArrayList<nonClustering> page = entirebrin.get(i);
+							System.out.println("page : "+page);
 							//might get a null pointer
 							allBrinoftable.get(i/n).add(page.get(0).value); //min
 							allBrinoftable.get(i/n).add(page.get(page.size()-1).value);//max
-							allBrinoftable.get(i/n).add(page.get(i));
+							//if we dont use Brin in any other place then everything will be fine xD
+							allBrinoftable.get(i/n).add((page.get(i)).pointers.get(0).page);
 						}
 						
 					}
@@ -838,7 +833,7 @@ public class DBApp {
 			f.getParentFile().mkdirs();
 			
 			f.createNewFile();
-			System.out.println(Arrays.toString(allBrinoftable.toArray()));
+			//System.out.println(Arrays.toString(allBrinoftable.toArray()));
 			WriteBrinFile(strTableName, allBrinoftable, 15,strColName);
 		}
 		
@@ -852,9 +847,10 @@ public class DBApp {
 		int tableInitialSizeModN = dense.size() / n;
 		for (int i = 0; i <= tableInitialSizeModN; i++) {
 			ArrayList<nonClustering> tableTmp = new ArrayList<nonClustering>();
-			for (int k = 0; ((k % n != 0 || k == 0) && !(dense.isEmpty()) && k<dense.size()); k++) {
-				tableTmp.add(dense.remove(k));
+			for (int k = 0; ((k % n != 0 || k == 0) && (!dense.isEmpty())); k++) {
+				tableTmp.add(dense.remove(0));
 			}
+			//System.out.println("Dense after loop : "+Arrays.toString(dense.toArray()));
 			array.add(tableTmp);
 		}
 		return array;
@@ -867,7 +863,6 @@ public class DBApp {
 			
 			//System.out.println("Ignis");
 			for (int i = 0; i < table.size(); i++) {
-				//the page might have not been init rabeena yostor
 				//System.out.println("noctis");
 				//System.out.printf("We are reaching new grounds %d\n",i);
 				String path = strTableName+File.separator+"Index" + File.separator + strColName+File.separator+"Dense"+File.separator+ "Page" + (i + 1) + ".class";
@@ -894,10 +889,11 @@ public class DBApp {
 				String path = strTableName+File.separator+"Index"+ File.separator+strColName+File.separator +"Brin"+File.separator+ "Page" + (i + 1) + ".class";
 				fileOut = new FileOutputStream(new File(path));
 				out = new ObjectOutputStream(fileOut);
-				ArrayList<Object> tableTmp = new ArrayList<Object>();
-				for (int k = 0; ((k % n != 0 || k == 0) && !(table.isEmpty())&& k<table.size()); k++) {
-					tableTmp.add((table.remove(k)));
+				ArrayList<Object> tableTmp = new ArrayList<Object>();			
+				for (int k = 0; ((k % n != 0 || k == 0) && (!table.isEmpty())); k++) {
+					tableTmp.add(table.remove(0));
 				}
+				//System.out.println("Dense after loop : "+Arrays.toString(dense.toArray()));
 				out.writeObject(tableTmp);
 			}
 			out.close();
@@ -931,7 +927,7 @@ public class DBApp {
 				}
 				in.close();
 				fileIn.close();
-				System.out.println("tableOfTables size : " + tableOfTables.size());
+				//System.out.println("tableOfTables size : " + tableOfTables.size());
 				for (int i = 0; i < tableOfTables.size(); i++) {
 					int queueInitialSize = tableOfTables.get(i).size();
 					for (int j = 0; j < queueInitialSize; j++) {
@@ -972,7 +968,7 @@ public class DBApp {
 				}
 				in.close();
 				fileIn.close();
-				System.out.println("tableOfTables size : " + tableOfTables.size());
+				//System.out.println("tableOfTables size : " + tableOfTables.size());
 				for (int i = 0; i < tableOfTables.size(); i++) {
 					int queueInitialSize = tableOfTables.get(i).size();
 					for (int j = 0; j < queueInitialSize; j++) {
@@ -1027,7 +1023,7 @@ public class DBApp {
 			
 			String[] tmpArray = newLine.split(",");
 			if(!result.contains(newLine)||newLine.equals("Table Name,Column Name,Column Type,Key,Indexed")){
-			if (tmpArray[4].equals("false")){
+			if (tmpArray[4].equals("true")){
 				createBRINIndex(tablename, tmpArray[1]);
 			}
 			
@@ -1115,42 +1111,3 @@ public class DBApp {
 	}
 	
 }
-
-////this is my attempt at creating the nonclustering key index,not actual method not its right place
-//	public static void nonclusteredindex(){
-//		String strTableName;
-//		ArrayList<PriorityQueue> table=null; //= ReadFilesBrin(strTableName);//entire table
-//		ArrayList<nonClustering> dense = new ArrayList<nonClustering>();
-//		int x=5; //this will come from the method that gets the place of the column from heshams method
-//		for(int i=0;i<table.size();i++){
-//			PriorityQueue<Tuple> pq = (PriorityQueue<Tuple>) table.get(i);
-//			int tuplelocation =0;
-//			while(!pq.isEmpty()){
-//			Tuple t = pq.poll();
-//			if(dense.contains(t.tupleData.get(x))){
-//				//very stupid not sure it will work
-//				dense.get(dense.indexOf(t.tupleData.get(x))).pointers.add(new Pointer(i, tuplelocation));
-//			}
-//			else {
-//				ArrayList<Pointer> pointers = new ArrayList<Pointer>();
-//				pointers.add(new Pointer(i,tuplelocation));
-//				dense.add(new nonClustering(t.tupleData.get(x), pointers ));
-//				}
-//			tuplelocation++;	
-//		}
-//			}
-//		Collections.sort(dense);
-//		
-//		ArrayList<ArrayList<nonClustering>> entirebrin = new ArrayList<ArrayList<nonClustering>>();
-//		//we need to load every 200 values in dense in an arraylist of nonclustering then put it in entirebrin
-//		//we need to save this file
-//		ArrayList<ArrayList<Object>> allBrinoftable = new ArrayList<>();
-//		//creating a brin for the nonclustering value
-//		for(int i=0;i< entirebrin.size();i++){
-//			ArrayList<nonClustering> page = entirebrin.get(i);
-//			//might get a null pointer
-//			allBrinoftable.get(i).add(page.get(0).value); //min
-//			allBrinoftable.get(i).add(page.get(page.size()-1).value);//max
-//		}
-//		
-//	}
